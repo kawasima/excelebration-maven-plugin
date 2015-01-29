@@ -20,4 +20,17 @@ public class PublishMojoTest {
         mojo.format = "excel";
         mojo.execute();
     }
+
+    @Test
+    public void genWithTemplate() throws URISyntaxException, MojoFailureException, MojoExecutionException {
+        PublishMojo mojo = new PublishMojo();
+        mojo.input = new File(Thread.currentThread().getContextClassLoader()
+                .getResource("test.md").toURI());
+        mojo.output = new File("target/output.xlsx");
+        mojo.format = "excel";
+        mojo.template = new File(Thread.currentThread().getContextClassLoader()
+                .getResource("template.clj").toURI());
+        mojo.execute();
+    }
+
 }

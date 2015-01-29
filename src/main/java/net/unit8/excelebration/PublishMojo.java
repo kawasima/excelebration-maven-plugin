@@ -11,6 +11,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author kawasima
@@ -29,14 +31,21 @@ public class PublishMojo extends AbstractMojo {
     @Parameter(defaultValue = "excel")
     protected String format;
 
+    /** template file */
+    @Parameter(name = "template")
+    protected File template;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         Clojure.var("clojure.core/require")
                 .invoke(Clojure.read("excelebration.publish"));
-        PersistentHashMap options = PersistentHashMap.create();
+        Map<Keyword, Object> options = new HashMap<Keyword, Object>();
+        if (template != null && template.isFile()) {
+            options.put(Keyword.find("template"), template.getPath());
+        }
         IFn publishFunc = Clojure.var("excelebration.publish", "publish");
         publishFunc.invoke(input.getPath(), output.getPath(),
                 Keyword.find(format),
-                options);
+                PersistentHashMap.create(options));
     }
 }
